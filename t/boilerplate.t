@@ -1,4 +1,4 @@
-#!perl -T
+#!perl
 
 use strict;
 use warnings;
@@ -48,7 +48,7 @@ TODO: {
     "placeholder date/time"       => qr(Date/time)
   );
 
-  module_boilerplate_ok('lib/Blog/Manage.pm');
+  module_boilerplate_ok('lib/Blog/Manager.pm');
 
 
 }

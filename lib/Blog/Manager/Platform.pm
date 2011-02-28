@@ -1,11 +1,14 @@
-package Blog::Manage;
+package Blog::Manager::Platform;
 
 use warnings;
 use strict;
+use JSON;
+use Log::Handler;
+use Data::Dumper;
 
 =head1 NAME
 
-Blog::Manage - The great new Blog::Manage!
+Blog::Manager::Platform - The great new Blog::Manager::Platform!
 
 =head1 VERSION
 
@@ -15,16 +18,15 @@ Version 0.01
 
 our $VERSION = '0.01';
 
-
 =head1 SYNOPSIS
 
 Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use Blog::Manage;
+    use Blog::Manager::Platform;
 
-    my $foo = Blog::Manage->new();
+    my $foo = Blog::Manager::Platform->new();
     ...
 
 =head1 EXPORT
@@ -34,23 +36,71 @@ if you don't export anything, such as for a purely object-oriented module.
 
 =head1 SUBROUTINES/METHODS
 
-=head2 function1
+=head2 new
 
 =cut
 
-sub function1 {
+sub new
+{
+  my $class = shift;
+  return $class if (ref $class );
+
+  my $self = {};
+  $self->{'_LOG'} = Log::Handler->get_logger("Blog::Manager");
+  $self->{'_LOG'}->debug("$class - Initializing an instance.");
+
+  # argument processing
+  if (@_ % 2 == 0)
+  {
+    # upper-case (only) the hash keys
+    my %args = @_;
+    %args = map { uc $_ => $args{$_} } keys %args;
+
+  }
+  
+  #
+
+  bless($self, $class);
+  return $self;
 }
 
-=head2 function2
+=head2 import
 
 =cut
 
-sub function2 {
+sub import
+{
+}
+
+=head2 export
+
+=cut
+
+sub export
+{
+}
+
+=head2 load_file
+
+=cut
+
+sub load_file
+{
+  my ($self, $filename) = @_;
+  die "ERROR: can't invoke 'load_file' as a class method.\n" unless ref($self);
+
+  open(FILE, $filename) or die "error opening '$filename': $!\n";
+  my $json_posts = do { local $/; <FILE>; };
+  $self->{'_POSTS'} = decode_json($json_posts);
+  
+  $self->{'_LOG'}->debug("$self - These were the posts loaded: " . Dumper($self->{'_POSTS'}));
+
+  return (defined $self->{'_POSTS'}) ? 1 : 0;
 }
 
 =head1 AUTHOR
 
-"Sérgio Bernardino", C<< <"me at sergiobernardino.net"> >>
+"Sergio Bernardino", C<< <"me at sergiobernardino.net"> >>
 
 =head1 BUGS
 
@@ -65,7 +115,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Blog::Manage
+    perldoc Blog::Manager::Platform
 
 
 You can also look for information at:
@@ -96,7 +146,7 @@ L<http://search.cpan.org/dist/Blog-Manage/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2011 "Sérgio Bernardino".
+Copyright 2011 "Sergio Bernardino".
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
@@ -107,4 +157,4 @@ See http://dev.perl.org/licenses/ for more information.
 
 =cut
 
-1; # End of Blog::Manage
+1; # End of Blog::Manager::Platform

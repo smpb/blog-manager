@@ -1,10 +1,10 @@
-#!perl -T
+#!perl
 
 use Test::More tests => 1;
 
 BEGIN {
-    use_ok( 'Blog::Manage' ) || print "Bail out!
+    use_ok( 'Blog::Manager' ) || print "Bail out!
 ";
 }
 
-diag( "Testing Blog::Manage $Blog::Manage::VERSION, Perl $], $^X" );
+diag( "Testing Blog::Manager $Blog::Manager::VERSION, Perl $], $^X" );

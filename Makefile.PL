@@ -3,10 +3,10 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME                => 'Blog::Manage',
+    NAME                => 'Blog::Manager',
     AUTHOR              => q{"Sérgio Bernardino" <"me@sergiobernardino.net">},
-    VERSION_FROM        => 'lib/Blog/Manage.pm',
-    ABSTRACT_FROM       => 'lib/Blog/Manage.pm',
+    VERSION_FROM        => 'lib/Blog/Manager.pm',
+    ABSTRACT_FROM       => 'lib/Blog/Manager.pm',
     ($ExtUtils::MakeMaker::VERSION >= 6.3002
       ? ('LICENSE'=> 'perl')
       : ()),
@@ -15,5 +15,5 @@ WriteMakefile(
         'Test::More' => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'Blog-Manage-*' },
+    clean               => { FILES => 'Blog-Manager-*' },
 );
