@@ -3,6 +3,8 @@ MANIFEST
 Makefile.PL
 README
 lib/Blog/Manager.pm
+lib/Blog/Manager/Platform.pm
+lib/Blog/Manager/Tumblr.pm
 t/00-load.t
 t/manifest.t
 t/pod-coverage.t

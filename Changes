@@ -1,5 +1,7 @@
-Revision history for Blog-Manage
+Revision history for Blog::Manager
 
-0.01    Date/time
-        First version, released on an unsuspecting world.
+0.01 - Thu Feb 24 16:19:35 2011
+
+     - Began implementation.
+     - Initial application skeleton created.
 

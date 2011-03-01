@@ -1,19 +1,22 @@
 use strict;
 use warnings;
-use ExtUtils::MakeMaker;
+use ExtUtils::MakeMaker 6.3002;
 
 WriteMakefile(
-    NAME                => 'Blog::Manager',
-    AUTHOR              => q{"Sérgio Bernardino" <"me@sergiobernardino.net">},
-    VERSION_FROM        => 'lib/Blog/Manager.pm',
-    ABSTRACT_FROM       => 'lib/Blog/Manager.pm',
-    ($ExtUtils::MakeMaker::VERSION >= 6.3002
-      ? ('LICENSE'=> 'perl')
-      : ()),
-    PL_FILES            => {},
+    NAME               => 'Blog::Manager',
+    ABSTRACT           => 'A simple, extensible, plugin-based blog manager.',
+    AUTHOR             => q{"Sérgio Bernardino" <"me@sergiobernardino.net">},
+    VERSION_FROM       => 'lib/Blog/Manager.pm', # finds VERSION
+    LICENSE            => 'perl',
     PREREQ_PM => {
-        'Test::More' => 0,
+        'Test::More'        => 0,
+        'Module::Pluggable' => 0,
+        'Log::Handler'      => 0,
+        'JSON'              => 0,
+        'WWW::Tumblr'       => 0,
     },
-    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'Blog-Manager-*' },
+    dist               => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    test               => {
+        'TESTS' => 't/*.t'
+    }
 );
