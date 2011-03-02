@@ -9,7 +9,7 @@ use Data::Dumper;
 
 =head1 NAME
 
-Blog::Manager - The great new Blog::Manager!
+Blog::Manager - A simple, extensible, plugin-based blog manager 
 
 =head1 VERSION
 
@@ -19,22 +19,9 @@ Version 0.01
 
 our $VERSION = '0.01';
 
-
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
 
-Perhaps a little code snippet.
-
-    use Blog::Manager;
-
-    my $foo = Blog::Manager->new();
-    ...
-
-=head1 EXPORT
-
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
 
 =head1 SUBROUTINES/METHODS
 
@@ -45,15 +32,18 @@ if you don't export anything, such as for a purely object-oriented module.
 sub new
 {
   my $class = shift;
-  return $class if (ref $class );
+  return $class if (ref $class);
 
   my $self = {};
   my $options = {
                   log_to     => 'STDERR',
-                  maxlevel   => 'debug',
+                  maxlevel   => 'info',
                   minlevel   => 'error',
                   timeformat => "%d/%m/%Y %H:%M:%S",
   };
+
+  $options->{'maxlevel'} = 'debug' if ($ENV{DEBUG});
+
   $self->{'_LOG'} = Log::Handler->create_logger('Blog::Manager');
   $self->{'_LOG'}->add(screen => $options); # default LOG
 
@@ -62,7 +52,7 @@ sub new
   # argument processing
   if (@_ % 2 == 0)
   {
-    # upper-case (only) the hash keys
+    # normalization: upper-case (only) the hash keys
     my %args = @_;
     %args = map { uc $_ => $args{$_} } keys %args;    
 
@@ -142,60 +132,17 @@ sub get_manager
 
 =head1 AUTHOR
 
-"Sergio Bernardino", C<< <"me at sergiobernardino.net"> >>
-
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-blog-manage at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Blog-Manage>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-
-
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc Blog::Manager
-
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Blog-Manage>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Blog-Manage>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Blog-Manage>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Blog-Manage/>
-
-=back
-
-
-=head1 ACKNOWLEDGEMENTS
-
+"Sérgio Bernardino", E<lt>me@sergiobernardino.netE<gt>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2011 "Sergio Bernardino".
+Copyright (C) 2011 "Sérgio Bernardino"
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
 by the Free Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
-
 
 =cut
 

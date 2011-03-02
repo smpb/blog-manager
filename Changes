@@ -1,5 +1,12 @@
 Revision history for Blog::Manager
 
+0.01 - Wed Mar  2 12:07:05 2011
+
+     - Cleaned the POD sections in preparation of the actual documentation
+       to be added later.
+     - Implemented the basic methods for post writing, editing, and deleting,
+       in the context of the Tumblr manager.
+
 0.01 - Thu Feb 24 16:19:35 2011
 
      - Began implementation.
