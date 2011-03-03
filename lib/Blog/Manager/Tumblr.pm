@@ -3,9 +3,10 @@ package Blog::Manager::Tumblr;
 use base qw(Blog::Manager::Platform);
 use warnings;
 use strict;
-use Log::Handler;
-use WWW::Tumblr;
+use XML::Simple;
 use Data::Dumper;
+use Log::Handler;
+use WWW::Tumblr 4.2;
 
 =head1 NAME
 
@@ -31,6 +32,7 @@ sub new
   if ($self)
   {
     $self->{'_GENERATOR'} = 'Blog::Manager::Tumblr - A Perl module // sergiobernardino.net';
+    $self->{'_XML_PARSER'} = XML::Simple->new;
 
     # specific argument processing
     if (@_ % 2 == 0)
@@ -323,38 +325,89 @@ sub delete_post
 
 sub read_pages
 {
-  my $self = shift;
+  my ($self, $args) = @_;
   return unless (ref $self);
+
+  return $self->{'_XML_PARSER'}->XMLin($self->{'_CONNECTION'}->pages(%$args));
 }
 
 sub read_posts
 {
-  my $self = shift;
+  my ($self, $args) = @_;
   return unless (ref $self);
-}
 
-sub like_post
-{
-  my $self = shift;
-  return unless (ref $self);
-}
-
-sub unlike_post
-{
-  my $self = shift;
-  return unless (ref $self);
+  return $self->{'_XML_PARSER'}->XMLin($self->{'_CONNECTION'}->read(%$args));
 }
 
 sub read_liked_posts
 {
-  my $self = shift;
+  my ($self, $args) = @_;
   return unless (ref $self);
+
+  return $self->{'_XML_PARSER'}->XMLin($self->{'_CONNECTION'}->likes(%$args));
+}
+
+sub like_post
+{
+  my ($self, $post_id, $reblog_key) = @_;
+  return unless (ref $self);
+
+  unless (defined $post_id)
+  {
+    $self->{'_LOG'}->error("$self - Unable to like a post: No post ID defined.");
+    return;
+  }
+  
+  unless (defined $reblog_key)
+  {
+    $self->{'_LOG'}->error("$self - Unable to like a post: No reblog key defined.");
+    return;
+  }
+
+  return $self->{'_CONNECTION'}->like('post-id', $post_id, 'reblog-key', $reblog_key);
+}
+
+sub unlike_post
+{
+  my ($self, $post_id, $reblog_key) = @_;
+  return unless (ref $self);
+
+  unless (defined $post_id)
+  {
+    $self->{'_LOG'}->error("$self - Unable to unlike a post: No post ID defined.");
+    return;
+  }
+
+  unless (defined $reblog_key)
+  {
+    $self->{'_LOG'}->error("$self - Unable to unlike a post: No reblog key defined.");
+    return;
+  }
+
+  return $self->{'_CONNECTION'}->unlike('post-id', $post_id, 'reblog-key', $reblog_key);
 }
 
 sub reblog_post
 {
-  my $self = shift;
+  my ($self, $post_id, $reblog_key, $args) = @_;
   return unless (ref $self);
+
+  unless (defined $post_id)
+  {
+    $self->{'_LOG'}->error("$self - Unable to like a post: No post ID defined.");
+    return;
+  }
+  
+  unless (defined $reblog_key)
+  {
+    $self->{'_LOG'}->error("$self - Unable to like a post: No reblog key defined.");
+    return;
+  }
+
+  $args->{'post-id'} = $post_id;
+  $args->{'reblog-key'} = $reblog_key;
+  $args->{'group'} = $self->url if $self->url;
+  return $self->{'_CONNECTION'}->reblog(%$args);
 }
 
 =head2 import
