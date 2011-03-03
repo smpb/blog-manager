@@ -14,7 +14,8 @@ WriteMakefile(
         'Module::Pluggable' => 0,
         'Log::Handler'      => 0,
         'JSON'              => 0,
-        'WWW::Tumblr'       => 0
+        'XML::Simple'       => 0,
+        'WWW::Tumblr'       => 4.2
     },
 
     META_MERGE  => {
