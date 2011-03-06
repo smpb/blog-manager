@@ -45,10 +45,9 @@ sub new
 
       $self->{'_CONNECTION'} = WWW::Tumblr->new;
 
-      $self->username($args{'USERNAME'}) if (defined $args{'USERNAME'});
-      $self->password($args{'PASSWORD'}) if (defined $args{'PASSWORD'});
-      $self->url($args{'URL'}) if (defined $args{'URL'});
-      $self->load_file($args{'FILE'})  if (defined $args{'FILE'});
+      $self->username($args{'USERNAME'})  if (defined $args{'USERNAME'});
+      $self->password($args{'PASSWORD'})  if (defined $args{'PASSWORD'});
+      $self->url($args{'URL'})            if (defined $args{'URL'});
     }
   }
 
@@ -418,8 +417,26 @@ sub reblog_post
 
 sub import
 {
-  my $self = shift;
+  my ($self, $posts) = @_;
   return unless (ref $self);
+  return unless (defined $posts);
+
+  if ((defined $posts->{'posts'}) and
+      (ref($posts->{'posts'}) eq 'ARRAY'))
+  {
+    foreach my $post (@{$posts->{'posts'}})
+    {
+      $self->write_post($post);
+    }
+  }
+  else
+  {
+    $self->{'_LOG'}->error("$self - Unable to import posts. Unexpected format.");
+    return;
+  }
+
+  # ok
+  return 1;
 }
 
 =head2 export
