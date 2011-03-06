@@ -35,75 +35,64 @@ sub new
   return $self;
 }
 
-=head2 write_post
+=head2 read_file
 
 =cut
 
-sub write_post {}
-
-=head2 edit_post
-
-=cut
-
-sub edit_post {}
-
-=head2 delete_post
-
-=cut
-
-sub delete_post {}
-
-=head2 read_posts
-
-=cut
-
-sub read_posts {}
-
-=head2 import
-
-=cut
-
-sub import {}
-
-=head2 export
-
-=cut
-
-sub export {}
-
-=head2 load_file
-
-=cut
-
-sub load_file
+sub read_file
 {
   my ($self, $filename) = @_;
   return unless ref($self);
+  return unless defined $filename;
 
-  if (defined $filename)
+  my $fh;
+
+  unless(open($fh, '<', $filename))
   {
-    my $fh;
-    $self->{'_POSTS_FILE'} = $filename;
-
-    unless(open($fh, '<', $filename))
-    {
-      $self->{'_LOG'}->error("$self - error opening '$filename': $!");
-      return;
-    }
-
-    my $json_posts = do { local $/ = undef; <$fh>; };
-    close($fh);
-
-    $self->{'_POSTS'} = decode_json($json_posts);  
-    $self->{'_LOG'}->debug("$self - These were the posts loaded: " . Dumper($self->{'_POSTS'}));
-
-    return (defined $self->{'_POSTS'}) ? 1 : 0;
+    $self->{'_LOG'}->error("$self - error opening '$filename': $!");
+    return;
   }
-  else
-  {
-    return $self->{'_POSTS_FILE'};
-  }
+
+  my $json_posts = do { local $/ = undef; <$fh>; };
+  close($fh);
+
+  return decode_json($json_posts);  
 }
+
+=head2 write_file
+
+=cut
+
+sub write_file
+{
+  my ($self, $posts, $filename) = @_;
+  return unless ref($self);
+  return unless defined $posts;
+  return unless defined $filename;
+
+  my $fh;
+  
+  unless(open($fh, '>', $filename))
+  {
+    $self->{'_LOG'}->error("$self - error opening '$filename': $!");
+    return;
+  }
+
+  my $json_posts = encode_json($posts);
+  print $fh $json_posts;
+  close($fh);
+
+  return $json_posts;
+}
+
+# interface
+
+sub write_post  {}
+sub edit_post   {}
+sub delete_post {}
+sub read_posts  {}
+sub import      {}
+sub export      {}
 
 =head1 AUTHOR
 
