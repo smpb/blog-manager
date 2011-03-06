@@ -336,7 +336,8 @@ sub read_posts
   my ($self, $args) = @_;
   return unless (ref $self);
 
-  return $self->{'_XML_PARSER'}->XMLin($self->{'_CONNECTION'}->read(%$args));
+  my $posts = $self->{'_XML_PARSER'}->XMLin($self->{'_CONNECTION'}->read(%$args));
+  return $self->_normalize_responses($posts); 
 }
 
 sub read_liked_posts
@@ -344,7 +345,8 @@ sub read_liked_posts
   my ($self, $args) = @_;
   return unless (ref $self);
 
-  return $self->{'_XML_PARSER'}->XMLin($self->{'_CONNECTION'}->likes(%$args));
+  my $posts = $self->{'_XML_PARSER'}->XMLin($self->{'_CONNECTION'}->likes(%$args));
+  return $self->_normalize_responses($posts);
 }
 
 sub like_post
@@ -429,6 +431,56 @@ sub export
   my $self = shift;
   return unless (ref $self);
 }
+
+# _normalize_responses
+#
+# The output from the Tumblr API is inconsistent.
+#
+# For example:
+# The data structure varies depending on if it contains one post, or several.
+#
+# I don't like this at all, thus, this method eliminates these discrepancies.
+
+sub _normalize_responses
+{
+  my ($self, $response) = @_;
+  return unless (ref $self);
+  return unless (defined $response and ref $response eq 'HASH');
+
+  my $clean_response = {};
+  
+  foreach my $key (keys %$response)
+  {
+    # lets fix the posts output
+    if ($key eq 'posts')
+    {
+      $clean_response->{'posts'} = [];
+
+      # do we have the struct of only one post?
+      if (defined $response->{'posts'}->{'post'}->{'id'})
+      {
+        push(@{$clean_response->{'posts'}}, $response->{'posts'}->{'post'});
+      }
+      else # the struct has more than one post
+      {
+        foreach my $id (sort keys %{$response->{'posts'}->{'post'}})
+        {
+          my $post = $response->{'posts'}->{'post'}->{$id};
+          $post->{'id'} = $id;
+          push(@{$clean_response->{'posts'}}, $post);
+        }
+      }
+    }
+    else
+    {
+      $clean_response->{$key} = $response->{$key};
+    }
+  }
+  
+  # done
+  return $clean_response;
+}
+
 
 =head1 AUTHOR
 
